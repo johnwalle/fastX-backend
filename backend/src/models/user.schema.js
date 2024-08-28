@@ -1,5 +1,5 @@
 const { Schema, model } = require('mongoose');
-const validator = require('validator')
+const validator = require('validator');
 
 
 const userSchema = new Schema({
@@ -17,15 +17,20 @@ const userSchema = new Schema({
         lowercase: true,
         validate(value) {
             if (!validator.isEmail(value)) {
-                throw new Error('Invalid email')
+                throw new Error('Invalid email');
             }
         }
+    },
+    phoneNumber: {
+        type: String,
+        required: true,
+        trim: true,
     },
     password: {
         type: String,
         required: true,
         trim: true,
-        minlength: 8,
+        minlength: 8
     },
     role: {
         type: String,
@@ -35,4 +40,3 @@ const userSchema = new Schema({
 }, { timestamps: true });
 
 module.exports = model('User', userSchema);
-	
