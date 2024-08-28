@@ -1,27 +1,34 @@
-const checkPasswordStrength = async (password) => {
-    // implement your password strength checking logic here
-    // return true if password is strong enough, false otherwise
+const validatePasswordStrength = (password) => {
+    const errors = [];
 
-    const MIN_PASSWORD_LENGTH = 8;
-    const hasUpperCase = /[A-Z]/.test(password);
-    const hasLowerCase = /[a-z]/.test(password);
-    const hasNumbers = /\d/.test(password);
-    const hasSpecialChars = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/.test(password);
+    // Check if password is at least 8 characters long
+    if (password.length < 8) {
+        errors.push('Password must be at least 8 characters long.');
+    }
 
-    return (
-        password.length >= MIN_PASSWORD_LENGTH &&
-        hasUpperCase &&
-        hasLowerCase &&
-        hasNumbers &&
-        hasSpecialChars
-    );
+    // Check for at least one lowercase letter
+    if (!/[a-z]/.test(password)) {
+        errors.push('Password must contain at least one lowercase letter.');
+    }
 
+    // Check for at least one uppercase letter
+    if (!/[A-Z]/.test(password)) {
+        errors.push('Password must contain at least one uppercase letter.');
+    }
 
-}
+    // Check for at least one digit
+    if (!/\d/.test(password)) {
+        errors.push('Password must contain at least one digit.');
+    }
 
+    // Check for at least one special character
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+        errors.push('Password must contain at least one special character.');
+    }
 
+    
 
+    return errors.length === 0 ? { valid: true } : { valid: false, errors };
+};
 
-
-
-module.exports = { checkPasswordStrength };
+module.exports = { validatePasswordStrength };
