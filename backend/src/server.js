@@ -14,7 +14,7 @@ const cartRoutes = require('./routes/cart.routes');
 const orderRoutes = require('./routes/order.routes');
 const driverRoutes = require('./routes/driver.routes');
 
-// middleware
+// Middleware
 app.use(express.json());
 app.use(cors()); // Enable CORS
 app.use('/api/users', userRoutes);
@@ -26,13 +26,21 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/order', orderRoutes);
 app.use('/api/driver', driverRoutes);
 
-//connecting to the database
-connectDB();
+// Connect to the database and then start the server
+const startServer = async () => {
+    try {
+        // Connect to MongoDB
+        await connectDB();
+        
+        // Start the server after successful database connection
+        const port = process.env.PORT || 5000;
+        app.listen(port, () => {
+            console.log(`Server is running on port ${port}`.cyan.bold);
+        });
+    } catch (error) {
+        console.error('Failed to start server:'.red, error);
+        process.exit(1); // Exit process if there is an error starting the server
+    }
+};
 
-// listening to the server
-
-const port = process.env.PORT || 5000;
-
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`.cyan.bold);
-});
+startServer();

@@ -13,34 +13,55 @@ const User = require("../models/user.schema");
 const tokenService = new TokenService();
 
 const login = async (email, password, ipAddr) => {
-
     try {
+        console.log('Fetching user by email:', email);
         const user = await userService.getUserByEmail(email);
+        console.log('User fetched:', user);
+
         if (!user) {
-            await Promise.all([
-                emailIpBruteLimiter.consume(`${email}_${ipAddr}`),
-                slowerBruteLimiter.consume(ipAddr),
-                emailBruteLimiter.consume(email),
-            ]);
-            throw new ApiError(httpStatus.UNAUTHORIZED, "Incorrect email or password");
+            console.log('Error: User not found for email:', email);
+
+            try {
+                await Promise.all([
+                    emailIpBruteLimiter.consume(`${email}_${ipAddr}`),
+                    slowerBruteLimiter.consume(ipAddr),
+                    emailBruteLimiter.consume(email),
+                ]);
+            } catch (rateLimiterError) {
+                console.error('Error applying rate limiter:', rateLimiterError);
+            }
+
+            throw new ApiError(httpStatus.UNAUTHORIZED, "Incorrect email");
         }
 
+        console.log('Comparing passwords');
         const isPasswordValid = await bcrypt.compare(password, user.password);
+        console.log('Password valid:', isPasswordValid);
+
         if (!isPasswordValid) {
-            await Promise.all([
-                emailIpBruteLimiter.consume(`${email}_${ipAddr}`),
-                slowerBruteLimiter.consume(ipAddr),
-                emailBruteLimiter.consume(email),
-            ]);
-            throw new ApiError(httpStatus.UNAUTHORIZED, "Incorrect email or password");
+            console.log('Error: Incorrect password for email:', email);
+
+            try {
+                await Promise.all([
+                    emailIpBruteLimiter.consume(`${email}_${ipAddr}`),
+                    slowerBruteLimiter.consume(ipAddr),
+                    emailBruteLimiter.consume(email),
+                ]);
+            } catch (rateLimiterError) {
+                console.error('Error applying rate limiter:', rateLimiterError);
+            }
+
+            throw new ApiError(httpStatus.UNAUTHORIZED, "Incorrect password");
         }
 
         return user;
     } catch (error) {
-        console.error(error);
+        console.error('Error in login function:', error);
         throw error;
     }
 };
+
+
 
 const refreshAuthToken = async (refreshToken) => {
     const user = await tokenService.verifyToken(
@@ -72,8 +93,24 @@ const sendEmail = async (recipientEmail, resetToken) => {
         from: config.companyInfo.email,
         to: recipientEmail,
         subject: "Password Reset",
-        text: `Please use the following tLink to reset your password: http://localhost:3000/reset-password/${resetToken}`,
+        html: `
+            <div style="font-family: Arial, sans-serif; color: #333; text-align: center; padding: 20px;">
+                <!-- Centered container with some padding -->
+                <div style="max-width: 600px; margin: 0 auto; background-color: #f8f8f8; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+                    <img src="https://res.cloudinary.com/dso7gnmps/image/upload/v1724902955/fastX-logo-removebg-preview_oppnsb.png" alt="fastX Delivery" style="width: 200px; height: auto; margin-bottom: 20px;">
+                    <h2>Password Reset</h2>
+                    <p>We received a request to reset your password. Click the button below to reset it:</p>
+                    <a href="http://localhost:3000/reset-password/${resetToken}" 
+                       style="display: inline-block; padding: 10px 20px; color: #fff; background-color: #A40C0C; 
+                       text-decoration: none; border-radius: 5px; margin-top: 20px;">Reset Password</a>
+                    <p style="margin-top: 20px;">If you did not request a password reset, please ignore this email or contact support if you have questions.</p>
+                    <p>Thank you,</p>
+                    <p>fastX Delivery</p>
+                </div>
+            </div>
+        `,
     };
+
 
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {

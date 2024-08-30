@@ -7,7 +7,7 @@ const tokenTypes = require("../config/token");
 const TokenService = require('../services/token.service')
 const jwt = require('jsonwebtoken')
 const config = require('../config/config')
-const { checkPasswordStrength } = require('../utils/passwordUtils')
+const { validatePasswordStrength } = require('../utils/passwordUtils')
 
 const tokenService = new TokenService();
 
@@ -18,9 +18,6 @@ const tokenService = new TokenService();
 const login = catchAsync(async (req, res) => {
     const { email, password } = req.body;
     const user = await authService.login(email, password, req.connection.remoteAddress);
-    if (!user) {
-        throw new Error("Invalid email or password");
-    }
     const tokens = await tokenService.generateAuthTokens(user.id);
     return res.status(httpStatus.OK).send({ user, tokens });
 });
@@ -40,7 +37,7 @@ const forgotPassword = catchAsync(async (req, res) => {
     const { email } = req.body;
     const existUser = await userService.getUserByEmail(email);
     if (!existUser) {
-        return res.status(httpStatus.NOT_FOUND).json({ message: "user Not Found" })
+        return res.status(httpStatus.NOT_FOUND).json({ message: "email not found" })
     }
     await tokenService.removeToken(existUser._id);
     const tokens = await tokenService.generateAuthTokens(existUser._id);
@@ -75,10 +72,10 @@ const resetPassword = catchAsync(async (req, res) => {
     // check the password's strength
 
 
-    const isPasswordStrong = await checkPasswordStrength(password);
-    // check password strength
-    if (!isPasswordStrong) {
-        throw new ApiError(httpStatus.BAD_REQUEST, "Password is not strong enough");
+    // Validate password strength
+    const passwordValidation = await validatePasswordStrength(password);
+    if (!passwordValidation.valid) {
+        throw new ApiError(httpStatus.BAD_REQUEST, passwordValidation.errors);
     }
 
     // Reset the password
