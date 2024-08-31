@@ -2,13 +2,18 @@ const catchAsync = require('../utils/catchAsync')
 const reviewService = require('../services/review.service')
 const ApiError = require('../utils/apiError')
 const httpStatus = require('http-status')
-const menuItemService = require('../services/menuItem.service')
+const restaurantService = require('../services/restaurant.service')
 
 
 // GET /reviews: Get a list of all reviews of a menu ite,
-const getItemReviews = catchAsync(async (req, res) => {
-    const { itemId } = req.params
-    const reviews = await reviewService.getItemReviews(itemId)
+const getRestaurantReviews = catchAsync(async (req, res) => {
+    const { restID } = req.params;
+    const restaurant = await restaurantService.getRestaurantById(restID)
+    if (!restaurant) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Restaurant not found')
+    }
+
+    const reviews = await reviewService.getRestaurantReviews(restID)
     res.json(reviews)
 })
 
@@ -31,21 +36,21 @@ const createReview = catchAsync(async (req, res) => {
 
     const userId = req.user._id.toString();
     const { rating, comment } = req.body;
-    const { itemId } = req.params;
+    const { restID } = req.params;
 
     // check if the user reviewed before
 
-    const reviewed = await reviewService.getReviewByUserAndItemId(userId, itemId)
+    const reviewed = await reviewService.getReviewByUserAndRestId(userId, restID)
     if (reviewed.length > 0) {
-        return res.status(400).json({ message: 'You have already reviewed this item' })
+        return res.status(400).json({ message: 'You have already reviewed this restaurant.' })
     }
 
 
     // check if the menuitem that the user trying to review exists
 
-    const menuItem = await menuItemService.getMenuItemById(itemId)
-    if (!menuItem) {
-        return res.status(404).json({ message: 'Menu item not found' })
+    const restaurant = await restaurantService.getRestaurantById(restID)
+    if (!restaurant) {
+        return res.status(404).json({ message: 'Restaurant not found' })
     }
 
     // check if all the fields are filled
@@ -58,7 +63,7 @@ const createReview = catchAsync(async (req, res) => {
 
     const review = {
         user: userId,
-        menuItem: itemId,
+        restaurant: restID,
         rating,
         comment
     }
@@ -66,7 +71,7 @@ const createReview = catchAsync(async (req, res) => {
     // update the rating attribute in the menuitem
 
     if (created) {
-        await menuItemService.updateRating(itemId);
+        await restaurantService.updateRating(restID);
         res.status(201).json({ success: true, message: 'Review created successfully' })
     }
 
@@ -133,7 +138,7 @@ const deleteReview = catchAsync(async (req, res) => {
 
 
 module.exports = {
-    getItemReviews,
+    getRestaurantReviews,
     getReviewById,
     createReview,
     updateReview,

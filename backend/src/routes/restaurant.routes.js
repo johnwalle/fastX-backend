@@ -8,6 +8,7 @@ const {
     updateRestaurant,
     deleteRestaurant
 } = require('../controllers/restaurant.controller');
+
 const {
     requireSignIn,
     adminMiddleware,

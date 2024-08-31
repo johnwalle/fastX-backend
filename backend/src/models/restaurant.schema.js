@@ -18,13 +18,19 @@ const restaurantSchema = new Schema({
             message: 'Please enter a valid email'
         }
     },
-    cuisine_type: {
-        type: String,
+    cuisine_types: {
+        type: [{
+            type: String,
+        }],
         required: true
     },
     description: {
         type: String,
         required: true
+    },
+    rating: {
+        type: Number,
+        default: 0
     },
     address: {
         what3words_address: {

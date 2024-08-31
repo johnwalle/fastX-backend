@@ -52,23 +52,6 @@ const updateMenuItem = async (menuId, updateData) => {
 };
 
 
-const updateRating = async (menuId) => {
-    try {
-        const menuItemreviews = await reviewService.getItemReviews(menuId);
-        const numberofReviews = menuItemreviews.length;
-        const totalRating = menuItemreviews.reduce((sum, review) => sum + review.rating, 0);
-        const averageRating = totalRating / numberofReviews;
-        const roundedRating = Math.round(averageRating * 10) / 10;
-
-        const updatedItem = await Menu.findByIdAndUpdate(menuId, { rating: roundedRating }, {
-            new: true,
-        }).exec();
-        return updatedItem;
-    } catch (error) {
-        // Handle any potential error
-        throw new Error("Failed to update the rating of the menu item");
-    }
-}
 
 
 
@@ -84,5 +67,4 @@ module.exports = {
     getAllMenu,
     updateMenuItem,
     deleteMenuItem,
-    updateRating,
 }

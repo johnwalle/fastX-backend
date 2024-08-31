@@ -6,7 +6,7 @@ const httpStatus = require('http-status');
 // Create a new restaurant
 const createRestaurant = catchAsync(async (req, res) => {
 
-    const { name, email, cuisine_type, description, address, working_days, phone_number, operating_hours } = req.body;
+    const { name, email, cuisine_types, description, address, working_days, phone_number, operating_hours } = req.body;
     const imageFile = req.file.buffer;
 
     const uploadImage = () => {
@@ -41,7 +41,7 @@ const createRestaurant = catchAsync(async (req, res) => {
     const restaurants = {
         name,
         email,
-        cuisine_type,
+        cuisine_types,
         description,
         address,
         working_days,
@@ -58,10 +58,33 @@ const createRestaurant = catchAsync(async (req, res) => {
     })
 });
 
-const getRestaurants = catchAsync(async (req, res) => {
-    const restaurants = await restaurantService.getRestaurants();
-    res.status(httpStatus.OK).json(restaurants);
-});
+// const getRestaurants = catchAsync(async (req, res) => {
+//     const restaurants = await restaurantService.getRestaurants();
+//     res.status(httpStatus.OK).json(restaurants);
+// });
+
+
+// Controller to handle the request and response
+const getRestaurants = async (req, res) => {
+    try {
+        // Extract query parameters from the request
+        const filters = {
+            cuisine: req.query.cuisine,
+            search: req.query.search,
+            sort: req.query.sort,
+        };
+
+        // Fetch data using the service
+        const restaurants = await restaurantService.getRestaurants(filters);
+
+        // Send successful response
+        res.status(200).json({ success: true, data: restaurants });
+    } catch (error) {
+        // Handle errors
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
 
 // get restaurant by id
 const getRestaurantById = catchAsync(async (req, res) => {

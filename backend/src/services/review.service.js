@@ -1,13 +1,13 @@
 const Review = require('../models/review.schema')
 
-const getItemReviews = async (itemId) => {
-    const reviews = await Review.find({ menuItem: itemId })
+const getRestaurantReviews = async (restID) => {
+    const reviews = await Review.find({ restaurant: restID })
     return reviews
 }
 
-const getReviewByUserAndItemId = async (userID, menuID) => {
+const getReviewByUserAndRestId = async (userID, restID) => {
 
-    const reviews = Review.find({ $and: [{ user: userID }, { menuItem: menuID }] })
+    const reviews = Review.find({ $and: [{ user: userID }, { restaurant: restID }] })
     return reviews
 }
 
@@ -48,6 +48,6 @@ module.exports = {
     createReview,
     updateReview,
     deleteReview,
-    getItemReviews,
-    getReviewByUserAndItemId
+    getRestaurantReviews,
+    getReviewByUserAndRestId
 }
