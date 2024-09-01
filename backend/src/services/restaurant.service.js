@@ -48,11 +48,13 @@ const getRestaurants = async (filters) => {
 
     // Fetch all restaurants if no filter or search criteria are provided
     if (!isFiltering) {
-        return await Restaurant.find();
+        const restaurants = await Restaurant.find();
+        return restaurants;
     }
 
     // Fetch filtered, searched, and sorted restaurants
-    return await Restaurant.find(filter).sort(sortOption);
+    const restaurants = await Restaurant.find(filter).sort(sortOption);
+    return restaurants;
 };
 
 
