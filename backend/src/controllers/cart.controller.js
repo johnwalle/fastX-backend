@@ -72,7 +72,7 @@ const removeFromCart = catchAsync(async (req, res) => {
 
 const clearCart = catchAsync(async (req, res) => {
     const userId = req.user._id;
-    const cart = await cartService.clearCart(userId);
+    const cart = await cartService.deleteCart(userId);
     if (!cart) {
         throw new ApiError(400, 'Error clearing cart');
     }

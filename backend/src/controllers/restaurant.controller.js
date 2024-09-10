@@ -3,10 +3,53 @@ const catchAsync = require('../utils/catchAsync');
 const restaurantService = require('../services/restaurant.service');
 const cloudinary = require('../config/cloudinary.config')
 const httpStatus = require('http-status');
+const userService = require('../services/user.service');
 // Create a new restaurant
 const createRestaurant = catchAsync(async (req, res) => {
 
-    const { name, email, cuisine_types, description, address, working_days, phone_number, operating_hours } = req.body;
+    const { name, email, cuisine_types, description, address, working_days, phone_number, operating_hours, location } = req.body;
+
+    console.log("the body-data", req.body);
+
+    const user = await userService.getUserByEmail(email);
+    
+    if (!user) {
+        return res.status(httpStatus.BAD_REQUEST).json({
+            status: 'error',
+            message: 'The restaurant email has to be registered first'
+        });
+    }
+
+
+    const restaurant = await restaurantService.getRestaurantByEmail(email);
+
+    if (restaurant) {
+        return res.status(httpStatus.BAD_REQUEST).json({
+            status: 'error',
+            message: 'There is already a restaurant with that email'
+        });
+    }
+
+    // Check if the phone number starts with +251
+    if (!phone_number.startsWith('+251')) {
+        return res.status(httpStatus.BAD_REQUEST).json({
+            status: 'error',
+            message: 'Phone number must start with +251'
+        });
+    }
+
+
+    // Check if the rest of the number is numeric and has the correct length
+    const phoneWithoutCountryCode = phone_number.slice(4); // Remove +251
+    if (!/^\d{9}$/.test(phoneWithoutCountryCode)) {
+        return res.status(httpStatus.BAD_REQUEST).json({
+            status: 'error',
+            message: 'Phone number must have 9 digits after +251'
+        });
+    }
+
+
+
     const imageFile = req.file.buffer;
 
     const uploadImage = () => {
@@ -32,11 +75,7 @@ const createRestaurant = catchAsync(async (req, res) => {
     };
 
     const imageUrl = await uploadImage();
-    const restaurant = await restaurantService.getRestaurantByEmail(email);
 
-    if (restaurant) {
-        throw new ApiError(httpStatus.BAD_REQUEST, 'Restaurant with this email already exists');
-    }
 
     const restaurants = {
         name,
@@ -44,11 +83,11 @@ const createRestaurant = catchAsync(async (req, res) => {
         cuisine_types,
         description,
         address,
+        location,
         working_days,
         phone_number,
         operating_hours,
         image: imageUrl
-
     };
 
     await restaurantService.createRestaurant(restaurants);
@@ -123,7 +162,7 @@ const updateRestaurant = catchAsync(async (req, res) => {
         throw new ApiError(httpStatus.NOT_FOUND, 'Restaurant not found');
     }
 
-    const { name, email, cuisine_type, description, address, working_days, phone_number, operating_hours } = req.body;
+    const { name, email, cuisine_types, description, address, working_days, phone_number, operating_hours, location } = req.body;
 
 
     // check if the email exist
@@ -174,12 +213,13 @@ const updateRestaurant = catchAsync(async (req, res) => {
 
     restaurant.name = name;
     restaurant.email = email;
-    restaurant.cuisine_type = cuisine_type;
+    restaurant.cuisine_types = cuisine_types;
     restaurant.description = description;
     restaurant.address = address;
     restaurant.working_days = working_days;
     restaurant.phone_number = phone_number;
     restaurant.operating_hours = operating_hours;
+    restaurant.location = location;
 
     const updatedRestaurant = await restaurantService.updateRestaurant(restId, restaurant);
 

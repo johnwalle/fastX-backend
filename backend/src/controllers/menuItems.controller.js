@@ -4,6 +4,8 @@ const cloudinary = require('../config/cloudinary.config')
 const httpStatus = require('http-status');
 const menuItemsService = require('../services/menuItem.service');
 const restaurantService = require('../services/restaurant.service');
+const userService = require('../services/user.service');
+
 const Restaurant = require('../models/restaurant.schema')
 // Create a new menu item
 
@@ -12,6 +14,17 @@ const createMenuItem = catchAsync(async (req, res) => {
 
     const { name, description, price, category, tags, restaurantEmail } = req.body;
     const imageFile = req.file.buffer;
+
+    const user = req.user._id.toString();
+
+    const userEmail = await userService.getUserById(user);
+
+    console.log("restaurantEmail, userEmail", restaurantEmail, userEmail.email);
+
+    if (userEmail.email !== restaurantEmail) {
+        return res.status(404).json({ message: 'You are not authorized to create a menu item' })
+    }
+
 
     const uploadImage = () => {
         return new Promise((resolve, reject) => {
@@ -39,7 +52,7 @@ const createMenuItem = catchAsync(async (req, res) => {
 
     const restaurant = await restaurantService.getRestaurantByEmail(restaurantEmail);
     if (!restaurant) {
-        throw new ApiError(httpStatus.NOT_FOUND, 'Restaurant not found');
+        return res.status(404).json({ message: 'Restaurant not found' })
     }
 
 

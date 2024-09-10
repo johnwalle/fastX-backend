@@ -3,7 +3,7 @@ const reviewService = require('../services/review.service')
 const ApiError = require('../utils/apiError')
 const httpStatus = require('http-status')
 const restaurantService = require('../services/restaurant.service')
-
+const userService = require('../services/user.service')
 
 // GET /reviews: Get a list of all reviews of a menu ite,
 const getRestaurantReviews = catchAsync(async (req, res) => {
@@ -59,11 +59,16 @@ const createReview = catchAsync(async (req, res) => {
         return res.status(400).json({ message: 'please fill all the fields' })
     }
 
+    // retrive the users full name
+
+    const user = await userService.getUserById(userId);
+
 
 
     const review = {
         user: userId,
         restaurant: restID,
+        userFullName: user.fullName,
         rating,
         comment
     }

@@ -66,6 +66,7 @@ const createOrder = catchAsync(async (req, res) => {
         delivery_fee,
         total_amount
     }
+    
 
     // create the order
 
