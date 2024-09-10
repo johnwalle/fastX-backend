@@ -6,7 +6,6 @@ const Order = require('../models/order.schema');
 const createOrder = async (order) => {
     const newOrder = await Order.create(order);
     return newOrder;
-
 }
 
 // get all orders
@@ -30,11 +29,21 @@ const getAllUserOrders = async (userId) => {
     return orders;
 }
 
+// get order by cart ID
+const getOrderByCartId = async (cartId) => {
+    const order = await Order.findOne({ cartId });
+    // if (!order) {
+    //     throw new Error('Order not found for the specified cart ID');
+    // }
+    return order;
+};
+
+
 // update order by id
 
 const updateOrderById = async (orderId, status) => {
     try {
-        const updatedOrder = await Order.findByIdAndUpdate(orderId, { order_status: status }, {
+        const updatedOrder = await Order.findByIdAndUpdate(orderId, { payment_status: status }, {
             new: true,
         }).exec();
         return updatedOrder;
@@ -53,6 +62,6 @@ module.exports = {
     getAllOrders,
     getOrderById,
     updateOrderById,
-    getAllUserOrders
+    getAllUserOrders,
+    getOrderByCartId
 }
-	

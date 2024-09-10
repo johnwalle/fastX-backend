@@ -29,7 +29,7 @@ const createCart = async (userId, menuItemId, quantity, restaurantId) => {
     if (cart?.items.length > 0) {
         const isRestaurantMatched = cart.items.every(item => item.restaurant.toString() === restaurantId.toString());
         if (!isRestaurantMatched) {
-            throw new ApiError(400, 'Cannot add items from different restaurants to the same cart');
+            throw new ApiError(409, 'Cannot add items from different restaurants to the same cart', 'DIFFERENT_RESTAURANT_ERROR');
         }
     }
 
@@ -44,6 +44,8 @@ const createCart = async (userId, menuItemId, quantity, restaurantId) => {
         cart.items.push({
             restaurant: menuItem.restaurant,
             menuItem: menuItemId,
+            ItemName: menuItem.name,
+            ItemImage: menuItem.image,
             quantity,
             price: menuItem.price
         });
@@ -101,10 +103,13 @@ const clearCart = async (userId) => {
 
     cart.items = [];
     cart.totalPrice = 0.00;
+    cart.tx_ref = null
     await cart.save();
 
     return cart;
 }
+
+//
 
 // update cart status by id
 
@@ -121,6 +126,21 @@ const updateCartStatus = async (cartId, status) => {
 }
 
 
+// Delete cart by user ID
+const deleteCart = async (userId) => {
+    // Find the user's cart
+    const cart = await Cart.findOne({ user: userId });
+
+    // If the cart does not exist, throw an error
+    if (!cart) {
+        throw new ApiError(404, 'Cart not found');
+    }
+
+    // Delete the cart
+    await Cart.deleteOne({ _id: cart._id });
+
+    return { message: 'Cart deleted successfully' };
+};
 
 
 module.exports = {
@@ -129,5 +149,6 @@ module.exports = {
     removeFromCart,
     clearCart,
     getCartById,
-    updateCartStatus
+    updateCartStatus,
+    deleteCart
 };
