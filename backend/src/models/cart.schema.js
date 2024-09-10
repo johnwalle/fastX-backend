@@ -8,6 +8,8 @@ const CartSchema = new Schema({
         {
             restaurant: { type: Schema.Types.ObjectId, ref: 'Restaurant', required: true },
             menuItem: { type: Schema.Types.ObjectId, ref: 'Menu', required: true },
+            ItemName: { type: String, required: true },
+            ItemImage: { type: String, required: true },
             quantity: { type: Number, required: true, min: 1, default: 1 },
             price: { type: Number, required: true }
         }

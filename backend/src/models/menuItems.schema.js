@@ -21,13 +21,6 @@ const menuItemSchema = new Schema({
         type: String,
         required: true
     },
-    rating: {
-        type: Number,
-        default: 0
-    },
-    tags: {
-        type: [String],
-    },
     restaurant: {
         type: Schema.Types.ObjectId,
         ref: 'Restaurant',

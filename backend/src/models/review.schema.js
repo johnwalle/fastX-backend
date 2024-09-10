@@ -6,6 +6,10 @@ const reviewSchema = new Schema({
         ref: 'User',
         required: true
     },
+    userFullName: {
+        type: String,
+        required: true
+    },
     restaurant: {
         type: Schema.Types.ObjectId,
         ref: 'Restaurant',
@@ -21,6 +25,6 @@ const reviewSchema = new Schema({
         type: String,
         required: true
     }
-}, {timestamps: true})
+}, { timestamps: true })
 
 module.exports = model('Review', reviewSchema)

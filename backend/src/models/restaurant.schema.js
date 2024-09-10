@@ -33,9 +33,6 @@ const restaurantSchema = new Schema({
         default: 0
     },
     address: {
-        what3words_address: {
-            type: String,
-        },
         street: {
             type: String,
         },
@@ -50,6 +47,16 @@ const restaurantSchema = new Schema({
             default: "Ethiopia"
         }
     },
+    location: {
+        latitude: {
+            type: Number,
+            required: true
+        },
+        longitude: {
+            type: Number,
+            required: true
+        }
+    },
     working_days: {
         type: [{
             type: String,
@@ -60,21 +67,7 @@ const restaurantSchema = new Schema({
     phone_number: {
         type: String,
         required: true,
-        validate: {
-            validator: function (value) {
-                const phoneRegex = /^\+251\s\d{2}\s\d{3}\s\d{4}$/;
-                return phoneRegex.test(value);
-            },
-            message: 'Please enter a valid phone number in the format: +251 [area code] [phone number]'
-        },
-        // Add custom error handling
-        set: function (value) {
-            const phoneRegex = /^\+251\s\d{2}\s\d{3}\s\d{4}$/;
-            if (!phoneRegex.test(value)) {
-                throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid phone number format');
-            }
-            return value;
-        }
+        trim: true
     },
     image: {
         type: String,

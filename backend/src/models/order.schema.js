@@ -22,16 +22,21 @@ const orderSchema = new Schema({
             ref: 'Menu',
             required: true
         },
-        quantity: {
-            type: Number,
-            required: true
-        },
+        ItemName: { type: String, required: true },
+        ItemImage: { type: String, required: true },
+        quantity: { type: Number, required: true },
+        price: { type: Number, required: true }
     }],
     delivery_instructions: { type: String },
     order_status: {
         type: String,
         enum: ['placed', 'preparing', 'on the way', 'delivered'],
         default: 'placed',
+    },
+    payment_status: {
+        type: String,
+        enum: ['pending', 'completed', 'failed', 'refunded'],
+        default: 'pending',
     },
     total_price: {
         type: Number,
@@ -46,9 +51,12 @@ const orderSchema = new Schema({
         type: Number,
         required: true
     },
+    tx_ref: {
+        type: String,
+        default: null
+    },
 }, { timestamps: true });
 
 const Order = model('Order', orderSchema);
 
 module.exports = Order;
-	
