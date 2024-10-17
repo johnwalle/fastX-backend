@@ -2,10 +2,12 @@ const cartService = require("../services/cart.service")
 const chapaService = require('../services/checkout.service')
 const userService = require('../services/user.service')
 const orderService = require('../services/order.service')
+const restaurantService = require('../services/restaurant.service.js')
 
 
 
 const createOrder = async (req, res) => {
+    console.log('order data', req.body);
     const { delivery_instructions } = req.body;
 
     try {
@@ -27,6 +29,17 @@ const createOrder = async (req, res) => {
         // Check if an order already exists with the current cartId
         const existingOrder = await orderService.getOrderByCartId(cart._id);
 
+        //get restaurnat id
+
+        const restaurantID = cart.items[0].restaurant;
+
+        //get restaurant name by its id
+
+        const restaurantData = await restaurantService.getRestaurantById(restaurantID)
+        const restaurantName = restaurantData?.name
+        console.log('restanurant name', restaurantName);
+
+
         console.log('existingOrder', existingOrder)
 
         // If an existing order is found, use it instead of creating a new one
@@ -42,7 +55,8 @@ const createOrder = async (req, res) => {
             const pendingOrder = {
                 user: user.id,
                 cartId: cart._id,
-                restaurant: cart.items[0].restaurant, // Assuming cart holds a restaurant reference
+                restaurant: restaurantID, // Assuming cart holds a restaurant reference
+                restaurantName,
                 OrderItems: cart.items,
                 delivery_instructions,
                 payment_status: 'pending',
@@ -91,16 +105,16 @@ const verifyCheckout = async (req, res) => {
             return res.status(404).send("No cart found!");
         }
 
-        
-        
-        
+
+
+
         //getting order by cart id
         const order = await orderService.getOrderByCartId(cart._id)
-        
-       
+
+
         // Verify the payment
         const result = await chapaService.verifyCheckout(order.tx_ref);
-        
+
         console.log("Result: " + result.status);
 
         // Check if the payment is successful

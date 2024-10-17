@@ -17,7 +17,7 @@ router.get('/profile', requireSignIn, getUserProfile);
 router.get('/:id', requireSignIn, adminMiddleware, getUserById);
 router.get('/', requireSignIn, adminMiddleware, getAllUsers);
 router.delete('/delete-user/:id', requireSignIn, deleteUser);
-router.put('/update-user/:id', requireSignIn, updateUser);
+router.put('/update/myaccount', requireSignIn, updateUser);
 
 
 module.exports = router;

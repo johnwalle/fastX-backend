@@ -6,7 +6,8 @@ const {
     getRestaurants,
     getRestaurantById,
     updateRestaurant,
-    deleteRestaurant
+    deleteRestaurant,
+    getMyRestaurant
 } = require('../controllers/restaurant.controller');
 
 const {
@@ -18,11 +19,11 @@ const {
 const upload = multer();
 
 
-
+router.get('/my-restaurant', requireSignIn, adminMiddleware, getMyRestaurant);
 router.post('/create', requireSignIn, superAdminMiddleware, upload.single('image'), createRestaurant);
 router.get('/', getRestaurants);
 router.get('/:id', getRestaurantById);
 router.delete('/delete/:id', requireSignIn, superAdminMiddleware, deleteRestaurant);
-router.put('/update/:id', requireSignIn, superAdminMiddleware, upload.single("image"), updateRestaurant);
+router.put('/update/:id', requireSignIn, adminMiddleware, upload.single("image"), updateRestaurant);
 
 module.exports = router;

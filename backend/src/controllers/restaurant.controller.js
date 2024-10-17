@@ -156,6 +156,7 @@ const deleteRestaurant = catchAsync(async (req, res) => {
 // update restaurant
 
 const updateRestaurant = catchAsync(async (req, res) => {
+    console.log("the body-data to update", req.body);
     const restId = req.params.id;
     let restaurant = await restaurantService.getRestaurantById(restId);
     if (!restaurant) {
@@ -231,11 +232,25 @@ const updateRestaurant = catchAsync(async (req, res) => {
 
 
 
+// get my restaurant
+
+const getMyRestaurant = catchAsync(async (req, res) => {
+    const user = req.user;
+    const restaurant = await restaurantService.getRestaurantByEmail(user.email);
+    if (!restaurant) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Restaurant not found');
+    }
+    res.status(httpStatus.OK).json(restaurant);
+});
+
+
+
 
 module.exports = {
     createRestaurant,
     getRestaurants,
     getRestaurantById,
     deleteRestaurant,
-    updateRestaurant
+    updateRestaurant,
+    getMyRestaurant
 }   

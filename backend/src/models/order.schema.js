@@ -16,6 +16,10 @@ const orderSchema = new Schema({
         ref: 'Restaurant',
         required: true
     },
+    restaurantName: {
+        type: String,
+        required: true
+    },
     OrderItems: [{
         menuItem: {
             type: Schema.Types.ObjectId,

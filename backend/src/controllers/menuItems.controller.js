@@ -186,11 +186,27 @@ const updateMenuItem = catchAsync(async (req, res) => {
 });
 
 
+
+//getMyrestaurants menu items
+
+const getMyRestaurantMenuItems = catchAsync(async (req, res) => {
+    const user = req.user;
+    const restaurant = await restaurantService.getRestaurantByEmail(user.email);
+    if (!restaurant) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Restaurant not found');
+    }
+    const menuItems = await menuItemsService.getMenuItemsByRestaurant(restaurant._id);
+    res.status(httpStatus.OK).json(menuItems);
+});
+
+
+
 module.exports = {
     createMenuItem,
     getMenuItemsByRestaurant,
     getMenuItemById,
     getAllMenu,
     deleteMenuItem,
-    updateMenuItem
+    updateMenuItem,
+    getMyRestaurantMenuItems
 }   

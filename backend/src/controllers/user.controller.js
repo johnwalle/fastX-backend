@@ -136,15 +136,16 @@ const deleteUser = catchAsync(async (req, res) => {
 // PATCH /api/users/:id
 
 const updateUser = catchAsync(async (req, res) => {
+    console.log("update data", req.user);
     const userId = req.user._id.toString();
-    const { id } = req.params;
+    // const { id } = req.params;
     const { fullName, email, phoneNumber } = req.body;
 
-    if (userId !== id) {
-        throw new ApiError(httpStatus.UNAUTHORIZED, "You are not authorized to update this user");
-    }
+    // if (userId !== id) {
+    //     throw new ApiError(httpStatus.UNAUTHORIZED, "You are not authorized to update this user");
+    // }
 
-    const user = await userService.getUserById(id);
+    const user = await userService.getUserById(userId);
 
     if (!user) {
         throw new ApiError(httpStatus.NOT_FOUND, "User not found");
@@ -161,9 +162,15 @@ const updateUser = catchAsync(async (req, res) => {
         throw new ApiError(httpStatus.BAD_REQUEST, "Phone number must start with +251");
     }
 
+    // Check if the rest of the number is numeric and has the correct length
+    const phoneWithoutCountryCode = phoneNumber.slice(4); // Remove +251
+    if (!/^\d{9}$/.test(phoneWithoutCountryCode)) {
+        throw new ApiError(400, 'Invalid phone number');
+    }
+
     // Check if the email is already taken
     const userExists = await userService.getUserByEmail(email);
-    if (userExists && userExists._id.toString() !== id) {
+    if (userExists && userExists._id.toString() !== userId) {
         throw new ApiError(httpStatus.BAD_REQUEST, "Email is already taken");
     }
 
@@ -173,7 +180,7 @@ const updateUser = catchAsync(async (req, res) => {
         phoneNumber
     };
 
-    const updatedUser = await userService.updateUser(id, userData);
+    const updatedUser = await userService.updateUser(userId, userData);
 
     res.status(httpStatus.OK).json({
         message: "User updated successfully",
