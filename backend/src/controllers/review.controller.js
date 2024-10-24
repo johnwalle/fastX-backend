@@ -13,7 +13,7 @@ const getRestaurantReviews = catchAsync(async (req, res) => {
         throw new ApiError(httpStatus.NOT_FOUND, 'Restaurant not found')
     }
 
-    const reviews = await reviewService.getRestaurantReviews(restID)
+    const reviews = await (await reviewService.getRestaurantReviews(restID)).sort((a, b) => b.createdAt - a.createdAt)
     res.json(reviews)
 })
 
@@ -77,7 +77,7 @@ const createReview = catchAsync(async (req, res) => {
 
     if (created) {
         await restaurantService.updateRating(restID);
-        res.status(201).json({ success: true, message: 'Review created successfully' })
+        res.status(201).json({ data: created, message: 'Review created successfully'  })
     }
 
 

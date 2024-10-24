@@ -9,7 +9,7 @@ const config = require('../config/config');
 const rateLimiterOptions = {
     storeClient: mongoose.connection,
     blockDuration: 60 * 60 * 24,
-    dbName: 'fastX-delivery',
+    dbName: 'eCommerce',
 };
 
 // Create rate limiters
