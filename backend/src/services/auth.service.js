@@ -1,7 +1,7 @@
 const httpStatus = require("http-status");
 const userService = require("../services/user.service");
 const ApiError = require("../utils/apiError");
-const { emailIpBruteLimiter, slowerBruteLimiter, emailBruteLimiter } = require("../Middleware/auth.limiter");
+const { emailIpBruteLimiter, slowerBruteLimiter, emailBruteLimiter } = require("../middleware/auth.limiter");
 const bcrypt = require('bcryptjs');
 const TokenService = require("../services/token.service");
 const nodemailer = require("nodemailer");
