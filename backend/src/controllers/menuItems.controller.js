@@ -1,4 +1,4 @@
-const ApiError = require('../utils/ApiError');
+const ApiError = require('../utils/apiError');
 const catchAsync = require('../utils/catchAsync');
 const cloudinary = require('../config/cloudinary.config')
 const httpStatus = require('http-status');
