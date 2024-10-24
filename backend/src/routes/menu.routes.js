@@ -5,7 +5,7 @@ const multer = require('multer')
 const upload = multer()
 
 
-const { requireSignIn, adminMiddleware } = require('../Middleware/authMiddleware')
+const { requireSignIn, adminMiddleware } = require('../middleware/authmiddleware');
 
 const { createMenuItem, getMenuItemById, getMenuItemsByRestaurant, getAllMenu, deleteMenuItem, updateMenuItem, getMyRestaurantMenuItems } = require('../controllers/menuItems.controller')
 

@@ -15,7 +15,7 @@ const {
     adminMiddleware,
     superAdminMiddleware,
 
-} = require('../Middleware/authMiddleware');
+} = require('../middleware/authmiddleware');
 const upload = multer();
 
 

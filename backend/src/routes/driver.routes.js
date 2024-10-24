@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../middleware/authMiddleware');
+const auth = require('../middleware/authmiddleware');
 const driverController = require('../controllers/driver.controller');
 
 router.post('/create', auth.requireSignIn, auth.adminMiddleware, driverController.createDriver);

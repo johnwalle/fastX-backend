@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const reviewController = require('../controllers/review.controller')
-const auth = require('../Middleware/authMiddleware')
+const auth = require('../middleware/authmiddleware');
 
 router.get('/:id', reviewController.getReviewById)
 router.get('/restaurant/:restID', reviewController.getRestaurantReviews)
