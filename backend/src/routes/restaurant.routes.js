@@ -24,6 +24,6 @@ router.post('/create', requireSignIn, superAdminMiddleware, upload.single('image
 router.get('/', getRestaurants);
 router.get('/:id', getRestaurantById);
 router.delete('/delete/:id', requireSignIn, superAdminMiddleware, deleteRestaurant);
-router.put('/update/:id', requireSignIn, adminMiddleware, upload.single("image"), updateRestaurant);
+router.put('/update/:id', requireSignIn, superAdminMiddleware, upload.single("image"), updateRestaurant);
 
 module.exports = router;

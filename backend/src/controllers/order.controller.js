@@ -119,7 +119,7 @@ const getOrderById = catchAsync(async (req, res) => {
 // get all orders
 
 const getAllOrders = catchAsync(async (req, res) => {
-    const orders = await orderService.getAllOrders();
+    const orders = (await orderService.getAllOrders()).sort((a, b) => b.createdAt - a.createdAt);
 
     res.status(200).json({ status: 'success', data: { orders } });
 
