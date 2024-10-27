@@ -66,7 +66,7 @@ const createOrder = catchAsync(async (req, res) => {
         delivery_fee,
         total_amount
     }
-    
+
 
     // create the order
 
@@ -96,7 +96,7 @@ const updateOrderStatus = catchAsync(async (req, res) => {
         throw new ApiError(404, 'Order not found');
     }
 
-    res.status(200).json({ status: 'success', message: 'Order status updated successfully'});
+    res.status(200).json({ status: 'success', message: 'Order status updated successfully' });
 
 })
 
@@ -120,7 +120,6 @@ const getOrderById = catchAsync(async (req, res) => {
 
 const getAllOrders = catchAsync(async (req, res) => {
     const orders = (await orderService.getAllOrders()).sort((a, b) => b.createdAt - a.createdAt);
-
     res.status(200).json({ status: 'success', data: { orders } });
 
 })
@@ -146,4 +145,3 @@ module.exports = {
     updateOrderStatus,
     getAllUserOrders
 }
-	
