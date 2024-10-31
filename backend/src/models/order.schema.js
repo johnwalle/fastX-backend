@@ -6,6 +6,14 @@ const orderSchema = new Schema({
         ref: 'User',
         required: true
     },
+    userName: {
+        type: String,
+        required: true
+    },
+    phoneNumber: {
+        type: String,
+        required: true
+    },
     cartId: {
         type: Schema.Types.ObjectId,
         ref: 'Cart',

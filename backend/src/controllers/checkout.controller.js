@@ -14,6 +14,14 @@ const createOrder = async (req, res) => {
         const user = req.user;
         const cart = await cartService.getCartByUserId(user.id);
 
+
+        //get user by id
+        const userData = await userService.getUserById(user.id)
+
+        // get the phone number and full name from the user data
+        const phoneNumber = userData?.phoneNumber;
+        const fullName = userData?.fullName;
+
         // Check if the cart exists
         if (!cart) {
             return res.status(404).send("No cart found!");
@@ -54,6 +62,8 @@ const createOrder = async (req, res) => {
             // Create a pending order with cart details before payment verification
             const pendingOrder = {
                 user: user.id,
+                userName: fullName,
+                phoneNumber,
                 cartId: cart._id,
                 restaurant: restaurantID, // Assuming cart holds a restaurant reference
                 restaurantName,
