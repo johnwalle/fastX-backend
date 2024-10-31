@@ -39,9 +39,24 @@ const getOrderByCartId = async (cartId) => {
 };
 
 
-// update order by id
+// update order status by id
 
 const updateOrderById = async (orderId, status) => {
+    try {
+        const updatedOrder = await Order.findByIdAndUpdate(orderId, { order_status: status }, {
+            new: true,
+        }).exec();
+        return updatedOrder;
+    } catch (error) {
+        console.error(error);
+        // Handle any potential error
+        throw new Error("Failed to update the order status");
+    }
+};
+
+
+//update payment status by id
+const updatePaymentStatus= async (orderId, status) => {
     try {
         const updatedOrder = await Order.findByIdAndUpdate(orderId, { payment_status: status }, {
             new: true,
@@ -56,12 +71,12 @@ const updateOrderById = async (orderId, status) => {
 
 
 
-
 module.exports = {
     createOrder,
     getAllOrders,
     getOrderById,
     updateOrderById,
     getAllUserOrders,
-    getOrderByCartId
+    getOrderByCartId,
+    updatePaymentStatus
 }

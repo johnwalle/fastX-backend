@@ -121,7 +121,7 @@ const verifyCheckout = async (req, res) => {
         if (result.status === "success") {
 
             // Update the payment status to "completed" after successful payment
-            await orderService.updateOrderById(order._id, "completed");
+            await orderService.updatePaymentStatus(order._id, "completed");
 
             // Clear the user's cart after a successful order
             await cartService.deleteCart(id);
