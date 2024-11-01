@@ -132,6 +132,7 @@ const getAllUserOrders = catchAsync(async (req, res) => {
 
     const orders = await orderService.getAllUserOrders(user);
 
+
     res.status(200).json({ status: 'success', data: { orders } });
 
 })

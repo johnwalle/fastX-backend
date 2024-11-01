@@ -25,7 +25,7 @@ const getOrderById = async (orderId) => {
 // get all users orders
 
 const getAllUserOrders = async (userId) => {
-    const orders = await Order.find({ user: userId });
+    const orders = await Order.find({ user: userId }).sort({ updatedAt: -1 });
     return orders;
 }
 
@@ -56,7 +56,7 @@ const updateOrderById = async (orderId, status) => {
 
 
 //update payment status by id
-const updatePaymentStatus= async (orderId, status) => {
+const updatePaymentStatus = async (orderId, status) => {
     try {
         const updatedOrder = await Order.findByIdAndUpdate(orderId, { payment_status: status }, {
             new: true,
