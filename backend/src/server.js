@@ -15,6 +15,7 @@ const orderRoutes = require('./routes/order.routes');
 const driverRoutes = require('./routes/driver.routes');
 const checkoutRoutes = require('./routes/checkout.routes')
 
+
 // Middleware
 app.use(express.json());
 app.use(cors()); // Enable CORS

@@ -38,7 +38,7 @@ const checkout = async (order, user) => {
             last_name: last,
             tx_ref: tx_ref,
             callback_url: `http://localhost:8000/api/checkout/verify/${user.id}`, // Ensure this URL is reachable from Chapa
-            return_url: 'http://localhost:3000/order/confirmation',
+            return_url: `http://localhost:3000/order/confirmation/${order._id}`,
         };
 
         // Send the request to Chapa
