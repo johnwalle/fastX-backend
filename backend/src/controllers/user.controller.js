@@ -188,11 +188,75 @@ const updateUser = catchAsync(async (req, res) => {
     });
 });
 
+
+// CREATE ADMIN USER
+// PROTECTED ROUTE (ADMIN ONLY)
+// POST /api/users/create-admin
+
+const createAdminUser = catchAsync(async (req, res) => {
+    console.log("addddddddmin data", req.body)
+    const { fullName, email, password, phoneNumber } = req.body;
+
+    // Check if all required fields are provided
+    if (!email || !password || !fullName || !phoneNumber) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Please fill all the fields");
+    }
+
+    // Check if user already exists
+    const userExists = await userService.getUserByEmail(email);
+    if (userExists) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Email is already taken");
+    }
+
+    // Check if the full name contains both first and last names
+    if (fullName.split(' ').length < 2) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Please enter both first name and last name");
+    }
+
+    // Validate phone number format
+    if (!phoneNumber.startsWith('+251')) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Phone number must start with +251");
+    }
+
+    const phoneWithoutCountryCode = phoneNumber.slice(4); // Remove +251
+    if (!/^\d{9}$/.test(phoneWithoutCountryCode)) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Invalid phone number");
+    }
+
+    // Validate password strength
+    const passwordValidation = await validatePasswordStrength(password);
+    if (!passwordValidation.valid) {
+        throw new ApiError(httpStatus.BAD_REQUEST, passwordValidation.errors);
+    }
+
+    // Hash password
+    const salt = await bcrypt.genSalt(12);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create new admin user
+    const newAdmin = {
+        fullName,
+        email,
+        password: hashedPassword,
+        phoneNumber,
+        role: "admin", // 👈 assign admin role
+    };
+
+    await userService.createUser(newAdmin);
+
+    res.status(httpStatus.CREATED).json({
+        success: true,
+        message: "Admin user created successfully",
+    });
+});
+
+
 module.exports = {
     registerUser,
     getUserProfile,
     getUserById,
     getAllUsers,
     deleteUser,
-    updateUser
+    updateUser,
+    createAdminUser
 };
